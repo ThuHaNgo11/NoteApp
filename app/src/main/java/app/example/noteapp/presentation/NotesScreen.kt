@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -79,7 +80,7 @@ fun NotesScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(state.notes.size) { index ->
-                NoteItem(state = state, index = index, onEvent= onEvent)
+                NoteItem(state = state, index = index, navController = navController, onEvent= onEvent)
             }
         }
     }
@@ -88,6 +89,7 @@ fun NotesScreen(
 @Composable
 fun NoteItem(
     state: NoteState,
+    navController: NavController,
     index: Int,
     onEvent: (NotesEvent) -> Unit
 ) {
@@ -119,8 +121,26 @@ fun NoteItem(
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
+
+        // edit note
+        IconButton(
+            onClick = {
+                state.title.value = state.notes[index].title
+                state.description.value = state.notes[index].description
+                state.noteId.value = state.notes[index].noteId
+                navController.navigate("EditNoteScreen")
+            }
+            // onEvent(NotesEvent.EditNote(state.notes[index]))
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Edit,
+                contentDescription = "Edit note",
+                modifier = Modifier.size(30.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
     
-        // trash can icon on the left    
+        // delete note
         IconButton(
             onClick = { onEvent(NotesEvent.DeleteNote(state.notes[index]))
             }
@@ -128,7 +148,7 @@ fun NoteItem(
             Icon(
                 imageVector = Icons.Rounded.Delete,
                 contentDescription = "Delete note",
-                modifier = Modifier.size(35.dp),
+                modifier = Modifier.size(30.dp),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }

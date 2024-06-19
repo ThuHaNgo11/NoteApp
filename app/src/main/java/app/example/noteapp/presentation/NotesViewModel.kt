@@ -1,5 +1,6 @@
 package app.example.noteapp.presentation
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,7 +32,7 @@ class NotesViewModel(
                 }
             }
 
-            is NotesEvent.SaveNote -> {
+            is NotesEvent.SaveNewNote -> {
                 val note = Note(
                     title = state.value.title.value,
                     description = state.value.description.value,
@@ -44,6 +45,25 @@ class NotesViewModel(
 
                 _state.update{
                     it.copy(
+                        title = mutableStateOf(""),
+                        description = mutableStateOf("")
+                    )
+                }
+            }
+
+            is NotesEvent.SaveNote -> {
+                val note = Note(
+                    noteId = state.value.noteId.value,
+                    title = state.value.title.value,
+                    description = state.value.description.value,
+                    dateAdded = System.currentTimeMillis()
+                )
+                viewModelScope.launch { // bc the dao is async
+                    dao.upsertNote(note)
+                }
+                _state.update{
+                    it.copy(
+                        noteId = mutableIntStateOf(0),
                         title = mutableStateOf(""),
                         description = mutableStateOf("")
                     )
