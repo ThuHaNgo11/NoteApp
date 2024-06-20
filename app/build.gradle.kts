@@ -78,4 +78,15 @@ dependencies {
 
     // Extended Icons
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.5.0")
+
+    // openai api client
+    implementation ("com.aallam.openai:openai-client:3.8.1")
+    implementation("io.ktor:ktor-client-okhttp:2.3.11")
+
+    //To display Images from URL
+    implementation ("io.coil-kt:coil-compose:2.4.0")
 }

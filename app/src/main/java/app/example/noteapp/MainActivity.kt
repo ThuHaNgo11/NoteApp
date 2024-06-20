@@ -24,6 +24,7 @@ import app.example.noteapp.presentation.AddNoteScreen
 import app.example.noteapp.presentation.EditNoteScreen
 import app.example.noteapp.presentation.NotesScreen
 import app.example.noteapp.presentation.NotesViewModel
+import app.example.noteapp.repository.ImageRepository
 import app.example.noteapp.ui.theme.NoteAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val state by viewModel.state.collectAsState()
                     val navController = rememberNavController()
+                    val imageRepository = ImageRepository()
 
                     NavHost(navController = navController, startDestination = "NotesScreen") {
                         composable("NotesScreen"){
@@ -73,6 +75,7 @@ class MainActivity : ComponentActivity() {
                             AddNoteScreen(
                                 state = state,
                                 navController = navController,
+                                imageRepository = imageRepository,
                                 onEvent = viewModel::onEvent
                             )
                         }

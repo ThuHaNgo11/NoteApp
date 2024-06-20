@@ -33,8 +33,8 @@ fun EditNoteScreen(
                 onEvent(
                     NotesEvent.SaveNote(
                         noteId = state.noteId.value,
-                        title = state.title.value,
-                        description = state.title.value
+                        title = state.name.value,
+                        description = state.name.value
                     )
                 )
                 // go back to notes screen
@@ -55,9 +55,9 @@ fun EditNoteScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                value = state.title.value,
+                value = state.name.value,
                 onValueChange = {
-                    state.title.value = it // when changes are made, it is assigned here
+                    state.name.value = it // when changes are made, it is assigned here
                 },
                 textStyle = TextStyle(
                     fontWeight = FontWeight.SemiBold,
@@ -72,9 +72,9 @@ fun EditNoteScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                value = state.description.value,
+                value = state.ingredients.value,
                 onValueChange = {
-                    state.description.value = it // when changes are made, it is assigned here
+                    state.ingredients.value = it // when changes are made, it is assigned here
                 },
                 placeholder = {
                     Text(text = "Description ")

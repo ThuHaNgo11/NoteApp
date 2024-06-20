@@ -64,8 +64,8 @@ fun NotesScreen(
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 // set the title and description to empty string before navigate to add new note screen
-                state.title.value = ""
-                state.description.value = ""
+                state.name.value = ""
+                state.ingredients.value = ""
                 navController.navigate("AddNoteScreen")
             }) {
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add new note")
@@ -125,8 +125,8 @@ fun NoteItem(
         // edit note
         IconButton(
             onClick = {
-                state.title.value = state.notes[index].title
-                state.description.value = state.notes[index].description
+                state.name.value = state.notes[index].title
+                state.ingredients.value = state.notes[index].description
                 state.noteId.value = state.notes[index].noteId
                 navController.navigate("EditNoteScreen")
             }

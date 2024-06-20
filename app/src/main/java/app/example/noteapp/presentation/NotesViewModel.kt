@@ -34,8 +34,8 @@ class NotesViewModel(
 
             is NotesEvent.SaveNewNote -> {
                 val note = Note(
-                    title = state.value.title.value,
-                    description = state.value.description.value,
+                    title = state.value.name.value,
+                    description = state.value.ingredients.value,
                     dateAdded = System.currentTimeMillis()
                 )
 
@@ -45,8 +45,8 @@ class NotesViewModel(
 
                 _state.update{
                     it.copy(
-                        title = mutableStateOf(""),
-                        description = mutableStateOf("")
+                        name = mutableStateOf(""),
+                        ingredients = mutableStateOf("")
                     )
                 }
             }
@@ -54,8 +54,8 @@ class NotesViewModel(
             is NotesEvent.SaveNote -> {
                 val note = Note(
                     noteId = state.value.noteId.value,
-                    title = state.value.title.value,
-                    description = state.value.description.value,
+                    title = state.value.name.value,
+                    description = state.value.ingredients.value,
                     dateAdded = System.currentTimeMillis()
                 )
                 viewModelScope.launch { // bc the dao is async
@@ -64,8 +64,8 @@ class NotesViewModel(
                 _state.update{
                     it.copy(
                         noteId = mutableIntStateOf(0),
-                        title = mutableStateOf(""),
-                        description = mutableStateOf("")
+                        name = mutableStateOf(""),
+                        ingredients = mutableStateOf("")
                     )
                 }
             }
