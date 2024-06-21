@@ -84,8 +84,9 @@ class MainActivity : ComponentActivity() {
                             EditNoteScreen(
                                 state = state,
                                 navController = navController,
-                                onEvent = viewModel::onEvent
-                            )
+                                onEvent = viewModel::onEvent,
+                                imageRepository = imageRepository
+                                )
                         }
                     }
                 }

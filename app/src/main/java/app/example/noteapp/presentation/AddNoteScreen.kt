@@ -53,8 +53,11 @@ fun AddNoteScreen(
             FloatingActionButton(onClick = {
                 onEvent(
                     NotesEvent.SaveNewNote(
-                        title = state.name.value,
-                        description = state.name.value
+                        name = state.name.value,
+                        ingredients = state.name.value,
+                        method = state.method.value,
+                        imageUrl = state.imageUrl.value,
+                        tags = state.tags
                     )
                 )
                 // go back to notes screen

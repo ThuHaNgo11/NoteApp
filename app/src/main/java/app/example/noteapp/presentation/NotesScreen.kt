@@ -1,5 +1,6 @@
 package app.example.noteapp.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -66,9 +67,14 @@ fun NotesScreen(
                 // set the title and description to empty string before navigate to add new note screen
                 state.name.value = ""
                 state.ingredients.value = ""
+                state.method.value = ""
+                state.tagField.value = ""
+                state.tags.clear()
+                state.imagePrompt.value = ""
+                state.imageUrl.value = ""
                 navController.navigate("AddNoteScreen")
             }) {
-                Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add new note")
+                Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add new recipe")
             }
         }
     ) { paddingValues ->
@@ -107,7 +113,7 @@ fun NoteItem(
             modifier = Modifier.weight(1f) 
         ) {
             Text(
-                text = state.notes[index].title,
+                text = state.notes[index].note.name,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -116,7 +122,7 @@ fun NoteItem(
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
-                text = state.notes[index].description,
+                text = state.notes[index].note.ingredients,
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
@@ -125,16 +131,19 @@ fun NoteItem(
         // edit note
         IconButton(
             onClick = {
-                state.name.value = state.notes[index].title
-                state.ingredients.value = state.notes[index].description
-                state.noteId.value = state.notes[index].noteId
+                state.name.value = state.notes[index].note.name
+                state.ingredients.value = state.notes[index].note.ingredients
+                state.noteId.value = state.notes[index].note.noteId
+                state.method.value = state.notes[index].note.method
+                state.imageUrl.value = state.notes[index].note.imageUrl
+                state.notes[index].tags?.let { state.tags.addAll(it.splitToSequence(',')) }
                 navController.navigate("EditNoteScreen")
             }
             // onEvent(NotesEvent.EditNote(state.notes[index]))
         ) {
             Icon(
                 imageVector = Icons.Rounded.Edit,
-                contentDescription = "Edit note",
+                contentDescription = "Edit recipe",
                 modifier = Modifier.size(30.dp),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -142,12 +151,12 @@ fun NoteItem(
     
         // delete note
         IconButton(
-            onClick = { onEvent(NotesEvent.DeleteNote(state.notes[index]))
+            onClick = { onEvent(NotesEvent.DeleteNote(state.notes[index].note))
             }
         ) {
             Icon(
                 imageVector = Icons.Rounded.Delete,
-                contentDescription = "Delete note",
+                contentDescription = "Delete recipe",
                 modifier = Modifier.size(30.dp),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )

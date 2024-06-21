@@ -1,11 +1,15 @@
 package app.example.noteapp.presentation
 
-import androidx.compose.runtime.mutableIntStateOf
+import android.util.Log
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.example.noteapp.data.Note
 import app.example.noteapp.data.NoteDao
+import app.example.noteapp.data.NoteTagCrossRef
+import app.example.noteapp.data.Tag
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -33,39 +37,63 @@ class NotesViewModel(
             }
 
             is NotesEvent.SaveNewNote -> {
-                val note = Note(
-                    title = state.value.name.value,
-                    description = state.value.ingredients.value,
-                    dateAdded = System.currentTimeMillis()
-                )
-
-                viewModelScope.launch {
-                    dao.upsertNote(note)
+                viewModelScope.launch(Dispatchers.IO) {
+                    val note = Note(
+                        name = event.name,
+                        ingredients = event.ingredients,
+                        method = event.method,
+                        imageUrl = event.imageUrl,
+                        dateAdded = System.currentTimeMillis()
+                    )
+                    val noteId = dao.upsertNote(note)
+                    val tags = event.tags.map{ Tag(name = it) }
+                    dao.insertTags(tags)
+                    val tagsFromDb = dao.getTagsByName(event.tags)
+                    dao.insertNoteTagCrossRef(tagsFromDb.map{ NoteTagCrossRef(noteId, it) })
                 }
 
                 _state.update{
                     it.copy(
                         name = mutableStateOf(""),
-                        ingredients = mutableStateOf("")
+                        ingredients = mutableStateOf(""),
+                        method = mutableStateOf(""),
+                        imageUrl = mutableStateOf(""),
+                        imagePrompt = mutableStateOf(""),
+                        tagField = mutableStateOf(""),
+                        tags = mutableListOf()
                     )
                 }
             }
 
             is NotesEvent.SaveNote -> {
-                val note = Note(
-                    noteId = state.value.noteId.value,
-                    title = state.value.name.value,
-                    description = state.value.ingredients.value,
-                    dateAdded = System.currentTimeMillis()
-                )
-                viewModelScope.launch { // bc the dao is async
+
+                viewModelScope.launch(Dispatchers.IO) { // bc the dao is async
+                    val note = Note(
+                        noteId = event.noteId,
+                        name = event.name,
+                        ingredients = event.ingredients,
+                        method = event.method,
+                        imageUrl = event.imageUrl,
+                        dateAdded = System.currentTimeMillis()
+                    )
                     dao.upsertNote(note)
+                    val tags = event.tags.map{ Tag(name = it) }
+                    dao.insertTags(tags)
+                    val tagsFromDb = dao.getTagsByName(event.tags)
+                    dao.deleteAllTagsForNote(event.noteId)
+                    dao.insertNoteTagCrossRef(tagsFromDb.map{ NoteTagCrossRef(event.noteId, it) })
                 }
+
                 _state.update{
                     it.copy(
-                        noteId = mutableIntStateOf(0),
+                        noteId = mutableLongStateOf(0),
                         name = mutableStateOf(""),
-                        ingredients = mutableStateOf("")
+                        ingredients = mutableStateOf(""),
+                        method = mutableStateOf(""),
+                        imageUrl = mutableStateOf(""),
+                        imagePrompt = mutableStateOf(""),
+                        tagField = mutableStateOf(""),
+                        tags = mutableListOf()
                     )
                 }
             }
