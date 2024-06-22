@@ -1,6 +1,5 @@
 package app.example.noteapp.presentation
 
-import android.util.Log
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -66,7 +65,6 @@ class NotesViewModel(
             }
 
             is NotesEvent.SaveNote -> {
-
                 viewModelScope.launch(Dispatchers.IO) { // bc the dao is async
                     val note = Note(
                         noteId = event.noteId,
@@ -97,6 +95,7 @@ class NotesViewModel(
                     )
                 }
             }
+
         }
     }
 }

@@ -22,4 +22,5 @@ sealed interface NotesEvent {
         val imageUrl: String,
         val tags: MutableList<String>
     ): NotesEvent
+
 }

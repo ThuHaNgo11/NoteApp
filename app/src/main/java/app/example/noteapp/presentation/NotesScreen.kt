@@ -3,6 +3,7 @@ package app.example.noteapp.presentation
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,11 +24,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -86,12 +89,18 @@ fun NotesScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(state.notes.size) { index ->
-                NoteItem(state = state, index = index, navController = navController, onEvent= onEvent)
+                NoteItem(
+                    state = state,
+                    index = index,
+                    navController = navController,
+                    onEvent = onEvent
+                )
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteItem(
     state: NoteState,
@@ -106,25 +115,35 @@ fun NoteItem(
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(12.dp)
     ) {
-        
+
         // Title and description on the right of each note row
         Column(
             // takes all available space all the way til the left icon
-            modifier = Modifier.weight(1f) 
+            modifier = Modifier.weight(1f)
         ) {
-            Text(
-                text = state.notes[index].note.name,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
+            Surface(
+                color = Color(0xFFA1E2EB),
+                shape = RoundedCornerShape(10.dp),
+                onClick = {
+                    navController.navigate("IndividualNoteScreen")
+                }
+            ) {
+                Text(
+                    text = state.notes[index].note.name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = state.notes[index].note.ingredients,
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.padding(start = 10.dp)
             )
         }
 
@@ -148,10 +167,11 @@ fun NoteItem(
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
-    
+
         // delete note
         IconButton(
-            onClick = { onEvent(NotesEvent.DeleteNote(state.notes[index].note))
+            onClick = {
+                onEvent(NotesEvent.DeleteNote(state.notes[index].note))
             }
         ) {
             Icon(

@@ -42,6 +42,4 @@ interface NoteDao {
 
     @Query("DELETE FROM NoteTagCrossRef WHERE noteId = :noteId")
     suspend fun deleteAllTagsForNote(noteId: Long)
-
-
 }
