@@ -8,6 +8,7 @@ import app.example.noteapp.data.Note
 import app.example.noteapp.data.NoteDao
 import app.example.noteapp.data.NoteTagCrossRef
 import app.example.noteapp.data.Tag
+import app.example.noteapp.repository.ImageRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 class NotesViewModel(
     private val dao: NoteDao //pass param to the constructor
 ) : ViewModel() {
+    private val imageRepository = ImageRepository()
     private var notes = dao.getNoteOrderByDateAdded()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     val _state = MutableStateFlow(NoteState())
@@ -30,7 +32,7 @@ class NotesViewModel(
     fun onEvent(event: NotesEvent) {
         when (event) {
             is NotesEvent.DeleteNote -> {
-                viewModelScope.launch { // bc the dao is async
+                viewModelScope.launch {
                     dao.deleteNote(event.note)
                 }
             }
@@ -96,6 +98,17 @@ class NotesViewModel(
                 }
             }
 
+            is NotesEvent.GenerateImage -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val result = imageRepository.makeImageGenerationRequest(event.prompt)
+                    event.setAnimState(false)
+                    _state.update{
+                        it.copy(
+                            imageUrl = mutableStateOf(result)
+                        )
+                    }
+                }
+            }
         }
     }
 }

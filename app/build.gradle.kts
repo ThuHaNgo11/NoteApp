@@ -67,6 +67,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
+    // coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
     // Room
     val roomVersion = "2.6.0"
@@ -89,4 +91,8 @@ dependencies {
 
     //To display Images from URL
     implementation ("io.coil-kt:coil-compose:2.4.0")
+
+    // Lottie animation
+    val lottieVersion = "6.4.0"
+    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 }

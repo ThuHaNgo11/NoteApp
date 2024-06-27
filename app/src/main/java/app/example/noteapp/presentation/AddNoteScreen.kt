@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.Brush
@@ -43,26 +44,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.example.noteapp.R
-import app.example.noteapp.repository.ImageRepository
 import coil.compose.AsyncImage
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddNoteScreen(
     state: NoteState,
     navController: NavController,
-    imageRepository: ImageRepository,
     onEvent: (NotesEvent) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     Scaffold(
         topBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(55.dp)
-                    .background(MaterialTheme.colorScheme.primary),
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(end = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = {
@@ -74,9 +83,10 @@ fun AddNoteScreen(
                         contentDescription = "Back",
                         modifier = Modifier
                             .size(25.dp),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        tint = Color.White
                     )
                 }
+
                 Text(
                     text = "New Recipe",
                     modifier = Modifier.weight(1f),
@@ -84,24 +94,33 @@ fun AddNoteScreen(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                onEvent(
-                    NotesEvent.SaveNewNote(
-                        name = state.name.value,
-                        ingredients = state.name.value,
-                        method = state.method.value,
-                        imageUrl = state.imageUrl.value,
-                        tags = state.tags
-                    )
-                )
-                // go back to notes screen
-                navController.popBackStack();
-            }) {
 
-                Icon(imageVector = Icons.Rounded.Check, contentDescription = "Save note")
+                IconButton(
+                    onClick = {
+                        onEvent(
+                            NotesEvent.SaveNewNote(
+                                name = state.name.value,
+                                ingredients = state.ingredients.value,
+                                method = state.method.value,
+                                imageUrl = state.imageUrl.value,
+                                tags = state.tags
+                            )
+                        )
+                        // go back to notes screen
+                        navController.popBackStack();
+                    },
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .size(40.dp)
+                        .background(Color.White)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        modifier = Modifier
+                            .size(25.dp),
+                        contentDescription = "Save Recipe"
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -112,6 +131,11 @@ fun AddNoteScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
+            // state to display image generating animation
+            val (isPlaying, setIsPlaying) = remember {
+                mutableStateOf(false)
+            }
+
             // recipe name
             TextField(
                 modifier = Modifier
@@ -158,10 +182,10 @@ fun AddNoteScreen(
                 }
             )
 
+            // Add tag
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Add tag
                 TextField(
                     modifier = Modifier
                         .padding(16.dp),
@@ -251,13 +275,14 @@ fun AddNoteScreen(
                 IconButton(
                     onClick = {
                         if (state.imagePrompt.value !== "") {
-                            // call Dalle2 api
-                            runBlocking {
-                                val job =
-                                    async { imageRepository.makeImageGenerationRequest(state.imagePrompt.value) }
-                                val result = job.await()
-                                state.imageUrl.value = result
-                            }
+                            keyboardController?.hide()
+                            setIsPlaying(true)
+                            onEvent(
+                                NotesEvent.GenerateImage(
+                                    prompt = state.imagePrompt.value,
+                                    setAnimState = setIsPlaying
+                                )
+                            )
                         }
                     },
                 ) {
@@ -271,10 +296,33 @@ fun AddNoteScreen(
                 }
             }
 
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 10.dp)) {
-                if (state.imageUrl.value !== "") {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 10.dp)
+            ) {
+
+                if (isPlaying) {
+                    // loading animation
+                    val composition by rememberLottieComposition(
+                        spec = LottieCompositionSpec.RawRes(R.raw.animation)
+                    )
+
+                    val progress by animateLottieCompositionAsState(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever
+                    )
+                    LottieAnimation(
+                        composition = composition,
+                        modifier = Modifier
+                            .size(300.dp),
+                        progress = {
+                            progress
+                        }
+                    )
+                }
+
+                if (!isPlaying && state.imageUrl.value !== "") {
                     AsyncImage(
                         model = state.imageUrl.value,
                         contentDescription = "Ai generated image",

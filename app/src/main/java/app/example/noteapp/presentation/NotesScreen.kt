@@ -2,6 +2,7 @@ package app.example.noteapp.presentation
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
@@ -27,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +57,7 @@ fun NotesScreen(
                     .fillMaxWidth()
                     .height(55.dp)
                     .background(MaterialTheme.colorScheme.primary)
-                    .padding(16.dp),
+                    .padding(start=16.dp, end=5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -62,22 +67,29 @@ fun NotesScreen(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
-            }
-        },
 
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                // set the title and description to empty string before navigate to add new note screen
-                state.name.value = ""
-                state.ingredients.value = ""
-                state.method.value = ""
-                state.tagField.value = ""
-                state.tags.clear()
-                state.imagePrompt.value = ""
-                state.imageUrl.value = ""
-                navController.navigate("AddNoteScreen")
-            }) {
-                Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add new recipe")
+                IconButton(
+                    onClick = {
+                        // set the title and description to empty string before navigate to add new note screen
+                        state.name.value = ""
+                        state.ingredients.value = ""
+                        state.method.value = ""
+                        state.tagField.value = ""
+                        state.tags.clear()
+                        state.imagePrompt.value = ""
+                        state.imageUrl.value = ""
+                        navController.navigate("AddNoteScreen")
+                    },
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .size(40.dp)
+                        .background(Color.White)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add new recipe"
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -125,6 +137,17 @@ fun NoteItem(
                 color = Color(0xFFA1E2EB),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
+                    state.name.value = state.notes[index].note.name
+                    state.ingredients.value = state.notes[index].note.ingredients
+                    state.noteId.value = state.notes[index].note.noteId
+                    state.method.value = state.notes[index].note.method
+                    state.imagePrompt.value = ""
+                    state.imageUrl.value = state.notes[index].note.imageUrl
+                    state.tags.clear()
+                    state.notes[index].tags?.let {
+                        state.tags.addAll(it.splitToSequence(','))
+                    }
+
                     navController.navigate("IndividualNoteScreen")
                 }
             ) {
@@ -133,7 +156,12 @@ fun NoteItem(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp)
+                    modifier = Modifier.padding(
+                        start = 10.dp,
+                        end = 10.dp,
+                        top = 5.dp,
+                        bottom = 5.dp
+                    )
                 )
             }
 
@@ -154,11 +182,14 @@ fun NoteItem(
                 state.ingredients.value = state.notes[index].note.ingredients
                 state.noteId.value = state.notes[index].note.noteId
                 state.method.value = state.notes[index].note.method
+                state.imagePrompt.value = ""
                 state.imageUrl.value = state.notes[index].note.imageUrl
-                state.notes[index].tags?.let { state.tags.addAll(it.splitToSequence(',')) }
+                state.tags.clear()
+                state.notes[index].tags?.let {
+                    state.tags.addAll(it.splitToSequence(','))
+                }
                 navController.navigate("EditNoteScreen")
             }
-            // onEvent(NotesEvent.EditNote(state.notes[index]))
         ) {
             Icon(
                 imageVector = Icons.Rounded.Edit,

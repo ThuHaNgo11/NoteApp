@@ -1,5 +1,6 @@
 package app.example.noteapp.presentation
 
+import androidx.compose.runtime.MutableState
 import app.example.noteapp.data.Note
 import coil.request.Tags
 
@@ -23,4 +24,8 @@ sealed interface NotesEvent {
         val tags: MutableList<String>
     ): NotesEvent
 
+    data class GenerateImage(
+        val prompt: String,
+        var setAnimState: (Boolean) -> Unit
+    ): NotesEvent
 }

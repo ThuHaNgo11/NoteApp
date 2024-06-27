@@ -10,18 +10,16 @@ import kotlinx.coroutines.withContext
 
 class ImageRepository {
 
-    private val openAI : OpenAI = OpenAI("sk-proj-EfgqfvwLxFVQqLm5z9UyT3BlbkFJmNK09ZFQ2RY0ZtlQqzfZ")
+    private val openAI: OpenAI = OpenAI("sk-proj-EfgqfvwLxFVQqLm5z9UyT3BlbkFJmNK09ZFQ2RY0ZtlQqzfZ")
     suspend fun makeImageGenerationRequest(prompt: String): String {
-        return withContext(Dispatchers.IO) {
-            val images = openAI.imageURL( // or openAI.imageJSON
-                creation = ImageCreation(
-                    prompt = prompt,
-                    model = ModelId("dall-e-2"),
-                    n = 1,
-                    size = ImageSize.is256x256
-                )
+        val images = openAI.imageURL( // or openAI.imageJSON
+            creation = ImageCreation(
+                prompt = prompt,
+                model = ModelId("dall-e-2"),
+                n = 1,
+                size = ImageSize.is256x256
             )
-            return@withContext images[0].url
-        }
+        )
+        return images[0].url
     }
 }

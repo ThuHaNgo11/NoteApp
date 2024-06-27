@@ -30,11 +30,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,8 +47,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.example.noteapp.R
-import app.example.noteapp.repository.ImageRepository
 import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
@@ -52,16 +61,17 @@ import kotlinx.coroutines.runBlocking
 fun EditNoteScreen(
     state: NoteState,
     navController: NavController,
-    imageRepository: ImageRepository,
     onEvent: (NotesEvent) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     Scaffold(
         topBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(55.dp)
-                    .background(MaterialTheme.colorScheme.primary),
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(end=5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = {
@@ -72,7 +82,7 @@ fun EditNoteScreen(
                         contentDescription = "Back",
                         modifier = Modifier
                             .size(25.dp),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        tint = Color.White
                     )
                 }
 
@@ -84,26 +94,33 @@ fun EditNoteScreen(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
-            }
-        },
 
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                onEvent(
-                    NotesEvent.SaveNote(
-                        noteId = state.noteId.value,
-                        name = state.name.value,
-                        ingredients = state.ingredients.value,
-                        method = state.method.value,
-                        imageUrl = state.imageUrl.value,
-                        tags = state.tags
-                    )
-                )
-                // go back to notes screen
-                navController.popBackStack()
-            }) {
-
-                Icon(imageVector = Icons.Rounded.Check, contentDescription = "Save recipe")
+                IconButton(
+                    onClick = {
+                        onEvent(
+                            NotesEvent.SaveNote(
+                                noteId = state.noteId.value,
+                                name = state.name.value,
+                                ingredients = state.ingredients.value,
+                                method = state.method.value,
+                                imageUrl = state.imageUrl.value,
+                                tags = state.tags
+                            )
+                        )
+                        // go back to notes screen
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .size(40.dp)
+                        .background(Color.White)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        modifier = Modifier
+                            .size(25.dp),
+                        contentDescription = "Save Recipe")
+                }
             }
         }
     ) { paddingValues ->
@@ -114,6 +131,9 @@ fun EditNoteScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
+            val (isPlaying, setIsPlaying) = remember {
+                mutableStateOf(false)
+            }
             // edit recipe name
             TextField(
                 modifier = Modifier
@@ -253,13 +273,14 @@ fun EditNoteScreen(
                 IconButton(
                     onClick = {
                         if (state.imagePrompt.value !== "") {
-                            // call Dalle2 api
-                            runBlocking {
-                                val job =
-                                    async { imageRepository.makeImageGenerationRequest(state.imagePrompt.value) }
-                                val result = job.await()
-                                state.imageUrl.value = result
-                            }
+                            keyboardController?.hide()
+                            setIsPlaying(true)
+                            onEvent(
+                                NotesEvent.GenerateImage(
+                                    prompt = state.imagePrompt.value,
+                                    setAnimState = setIsPlaying
+                                )
+                            )
                         }
                     },
                 ) {
@@ -278,7 +299,27 @@ fun EditNoteScreen(
                     .fillMaxSize()
                     .padding(bottom = 10.dp)
             ) {
-                if (state.imageUrl.value !== "") {
+                if (isPlaying) {
+                    // loading animation
+                    val composition by rememberLottieComposition(
+                        spec = LottieCompositionSpec.RawRes(R.raw.animation)
+                    )
+
+                    val progress by animateLottieCompositionAsState(
+                        composition = composition,
+                        iterations = LottieConstants.IterateForever
+                    )
+                    LottieAnimation(
+                        composition = composition,
+                        modifier = Modifier
+                            .size(300.dp),
+                        progress = {
+                            progress
+                        }
+                    )
+                }
+
+                if (!isPlaying && state.imageUrl.value !== "") {
                     AsyncImage(
                         model = state.imageUrl.value,
                         contentDescription = "Ai generated image",
