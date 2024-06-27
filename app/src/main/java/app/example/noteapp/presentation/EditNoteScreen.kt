@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIos
@@ -29,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +45,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -138,7 +141,15 @@ fun EditNoteScreen(
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(start=16.dp, end=16.dp, top=16.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    capitalization = KeyboardCapitalization.Sentences),
                 value = state.name.value,
                 onValueChange = {
                     state.name.value = it // when changes are made, it is assigned here
@@ -156,7 +167,15 @@ fun EditNoteScreen(
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(start=16.dp, end=16.dp, top=16.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    capitalization = KeyboardCapitalization.Sentences),
                 value = state.ingredients.value,
                 onValueChange = {
                     state.ingredients.value = it // when changes are made, it is assigned here
@@ -170,7 +189,15 @@ fun EditNoteScreen(
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(start=16.dp, end=16.dp, top=16.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    capitalization = KeyboardCapitalization.Sentences),
                 value = state.method.value,
                 onValueChange = {
                     state.method.value = it // when changes are made, it is assigned here
@@ -186,7 +213,16 @@ fun EditNoteScreen(
                 // Add tag
                 TextField(
                     modifier = Modifier
-                        .padding(16.dp),
+                        .padding(start=16.dp, top=16.dp)
+                        .weight(1f),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        capitalization = KeyboardCapitalization.Sentences),
                     value = state.tagField.value,
                     onValueChange = {
                         state.tagField.value = it
@@ -198,6 +234,8 @@ fun EditNoteScreen(
 
                 // confirm tag
                 IconButton(
+                    modifier = Modifier
+                        .padding(end=10.dp),
                     onClick = {
                         if (state.tagField.value !== "") {
                             if (state.tags.indexOf(state.tagField.value) < 0) {
@@ -259,7 +297,14 @@ fun EditNoteScreen(
                 // Prompt to generate image
                 TextField(
                     modifier = Modifier
-                        .padding(16.dp),
+                        .padding(start=16.dp, bottom =16.dp)
+                        .weight(1f),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
                     value = state.imagePrompt.value,
                     onValueChange = {
                         state.imagePrompt.value = it
@@ -271,6 +316,7 @@ fun EditNoteScreen(
 
                 // Generate image button
                 IconButton(
+                    modifier = Modifier.padding(end=10.dp, bottom =16.dp),
                     onClick = {
                         if (state.imagePrompt.value !== "") {
                             keyboardController?.hide()
