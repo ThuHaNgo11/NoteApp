@@ -15,29 +15,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.Brush
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,8 +46,8 @@ import coil.compose.AsyncImage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -140,10 +138,18 @@ fun AddNoteScreen(
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(start=16.dp, end=16.dp, top=16.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    capitalization = KeyboardCapitalization.Sentences),
                 value = state.name.value,
                 onValueChange = {
-                    state.name.value = it // when changes are made, it is assigned here
+                    state.name.value = it
                 },
                 textStyle = TextStyle(
                     fontWeight = FontWeight.SemiBold,
@@ -158,7 +164,13 @@ fun AddNoteScreen(
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(start=16.dp, end=16.dp, top=16.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
                 value = state.ingredients.value,
                 onValueChange = {
                     state.ingredients.value = it // when changes are made, it is assigned here
@@ -172,7 +184,13 @@ fun AddNoteScreen(
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(start=16.dp, end=16.dp, top=16.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
                 value = state.method.value,
                 onValueChange = {
                     state.method.value = it // when changes are made, it is assigned here
@@ -188,7 +206,14 @@ fun AddNoteScreen(
             ) {
                 TextField(
                     modifier = Modifier
-                        .padding(16.dp),
+                        .padding(start=16.dp, top=16.dp)
+                        .weight(1f),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
                     value = state.tagField.value,
                     onValueChange = {
                         state.tagField.value = it
@@ -200,6 +225,8 @@ fun AddNoteScreen(
 
                 // confirm tag
                 IconButton(
+                    modifier = Modifier
+                        .padding(end=10.dp),
                     onClick = {
                         if (state.tagField.value !== "") {
                             if (state.tags.indexOf(state.tagField.value) < 0) {
@@ -261,7 +288,14 @@ fun AddNoteScreen(
                 // Prompt to generate image
                 TextField(
                     modifier = Modifier
-                        .padding(16.dp),
+                        .padding(start=16.dp, bottom =16.dp)
+                        .weight(1f),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
                     value = state.imagePrompt.value,
                     onValueChange = {
                         state.imagePrompt.value = it
@@ -273,6 +307,7 @@ fun AddNoteScreen(
 
                 // Generate image button
                 IconButton(
+                    modifier = Modifier.padding(end=10.dp, bottom =16.dp),
                     onClick = {
                         if (state.imagePrompt.value !== "") {
                             keyboardController?.hide()
@@ -315,7 +350,8 @@ fun AddNoteScreen(
                     LottieAnimation(
                         composition = composition,
                         modifier = Modifier
-                            .size(300.dp),
+                            .size(300.dp)
+                            .align(Alignment.Center),
                         progress = {
                             progress
                         }

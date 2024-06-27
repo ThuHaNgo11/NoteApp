@@ -155,10 +155,8 @@ fun NoteItem(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.padding(
-                            start = 10.dp,
-                            end = 10.dp,
-                            top = 5.dp,
-                            bottom = 5.dp
+                            horizontal = 10.dp,
+                            vertical = 5.dp
                         )
                     )
                 }
