@@ -36,12 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import app.example.noteapp.R
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +59,7 @@ fun NotesScreen(
                     .fillMaxWidth()
                     .height(55.dp)
                     .background(MaterialTheme.colorScheme.primary)
-                    .padding(start=16.dp, end=5.dp),
+                    .padding(start = 16.dp, end = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -120,22 +122,49 @@ fun NoteItem(
     index: Int,
     onEvent: (NotesEvent) -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(12.dp)
     ) {
+        Row {
+            Row( modifier = Modifier.weight(1f)){
+                Surface(
+                    color = Color(0xFFA1E2EB),
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        state.name.value = state.notes[index].note.name
+                        state.ingredients.value = state.notes[index].note.ingredients
+                        state.noteId.value = state.notes[index].note.noteId
+                        state.method.value = state.notes[index].note.method
+                        state.imagePrompt.value = ""
+                        state.imageUrl.value = state.notes[index].note.imageUrl
+                        state.tags.clear()
+                        state.notes[index].tags?.let {
+                            state.tags.addAll(it.splitToSequence(','))
+                        }
 
-        // Title and description on the right of each note row
-        Column(
-            // takes all available space all the way til the left icon
-            modifier = Modifier.weight(1f)
-        ) {
-            Surface(
-                color = Color(0xFFA1E2EB),
-                shape = RoundedCornerShape(10.dp),
+                        navController.navigate("IndividualNoteScreen")
+                    }
+                ) {
+                    Text(
+                        text = state.notes[index].note.name,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(
+                            start = 10.dp,
+                            end = 10.dp,
+                            top = 5.dp,
+                            bottom = 5.dp
+                        )
+                    )
+                }
+            }
+            // edit note
+            IconButton(
                 onClick = {
                     state.name.value = state.notes[index].note.name
                     state.ingredients.value = state.notes[index].note.ingredients
@@ -147,69 +176,52 @@ fun NoteItem(
                     state.notes[index].tags?.let {
                         state.tags.addAll(it.splitToSequence(','))
                     }
-
-                    navController.navigate("IndividualNoteScreen")
+                    navController.navigate("EditNoteScreen")
                 }
             ) {
-                Text(
-                    text = state.notes[index].note.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.padding(
-                        start = 10.dp,
-                        end = 10.dp,
-                        top = 5.dp,
-                        bottom = 5.dp
-                    )
+                Icon(
+                    imageVector = Icons.Rounded.Edit,
+                    contentDescription = "Edit recipe",
+                    modifier = Modifier.size(30.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            // delete note
+            IconButton(
+                onClick = {
+                    onEvent(NotesEvent.DeleteNote(state.notes[index].note))
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = "Delete recipe",
+                    modifier = Modifier.size(30.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
 
+        Row() {
+            // ingredients
             Text(
                 text = state.notes[index].note.ingredients,
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.padding(start = 10.dp)
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .weight(1f)
             )
-        }
 
-        // edit note
-        IconButton(
-            onClick = {
-                state.name.value = state.notes[index].note.name
-                state.ingredients.value = state.notes[index].note.ingredients
-                state.noteId.value = state.notes[index].note.noteId
-                state.method.value = state.notes[index].note.method
-                state.imagePrompt.value = ""
-                state.imageUrl.value = state.notes[index].note.imageUrl
-                state.tags.clear()
-                state.notes[index].tags?.let {
-                    state.tags.addAll(it.splitToSequence(','))
-                }
-                navController.navigate("EditNoteScreen")
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Edit,
-                contentDescription = "Edit recipe",
-                modifier = Modifier.size(30.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
-
-        // delete note
-        IconButton(
-            onClick = {
-                onEvent(NotesEvent.DeleteNote(state.notes[index].note))
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = "Delete recipe",
-                modifier = Modifier.size(30.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            // image
+            AsyncImage(
+                model = state.notes[index].note.imageUrl,
+                contentDescription = "Ai generated image",
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Crop,
             )
         }
     }

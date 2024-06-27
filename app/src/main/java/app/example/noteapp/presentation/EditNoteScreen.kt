@@ -108,7 +108,7 @@ fun EditNoteScreen(
                             )
                         )
                         // go back to notes screen
-                        navController.popBackStack()
+                        navController.navigate("NotesScreen")
                     },
                     modifier = Modifier
                         .clip(RoundedCornerShape(50))
