@@ -1,8 +1,6 @@
-package app.example.noteapp.presentation
+package app.example.noteapp.viewModel
 
-import androidx.compose.runtime.MutableState
 import app.example.noteapp.data.Note
-import coil.request.Tags
 
 sealed interface NotesEvent {
     // define different types of events that user can make

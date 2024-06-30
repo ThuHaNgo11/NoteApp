@@ -1,4 +1,4 @@
-package app.example.noteapp.presentation
+package app.example.noteapp.viewModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableLongStateOf

@@ -11,3 +11,4 @@ import androidx.room.RoomDatabase
 abstract class NotesDb : RoomDatabase() {
     abstract val dao: NoteDao
 }
+

@@ -34,11 +34,11 @@ interface NoteDao {
     @Query("SELECT tagId FROM tag WHERE name IN (:names)")
     fun getTagsByName(names: List<String>): List<Long>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertNoteTagCrossRef(noteTagRefs: List<NoteTagCrossRef>)
-
     @Delete
     suspend fun deleteNoteTagCrossRef(noteTagRef: NoteTagCrossRef)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertNoteTagCrossRef(noteTagRefs: List<NoteTagCrossRef>)
 
     @Query("DELETE FROM NoteTagCrossRef WHERE noteId = :noteId")
     suspend fun deleteAllTagsForNote(noteId: Long)

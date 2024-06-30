@@ -1,4 +1,4 @@
-package app.example.noteapp.presentation
+package app.example.noteapp.viewModel
 
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +24,7 @@ class NotesViewModel(
     private var notes = dao.getNoteOrderByDateAdded()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     val _state = MutableStateFlow(NoteState())
-    val state = combine(_state, notes){ state, notes ->
+    val state = combine(_state, notes) { state, notes ->
         state.copy(
             notes = notes
         )

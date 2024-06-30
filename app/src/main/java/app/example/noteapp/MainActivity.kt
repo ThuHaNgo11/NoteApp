@@ -21,7 +21,7 @@ import app.example.noteapp.presentation.AddNoteScreen
 import app.example.noteapp.presentation.EditNoteScreen
 import app.example.noteapp.presentation.IndividualNoteScreen
 import app.example.noteapp.presentation.NotesScreen
-import app.example.noteapp.presentation.NotesViewModel
+import app.example.noteapp.viewModel.NotesViewModel
 import app.example.noteapp.repository.ImageRepository
 import app.example.noteapp.ui.theme.NoteAppTheme
 
