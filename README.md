@@ -18,7 +18,7 @@
 
 1. Go to https://platform.openai.com/api-keys to generate your API key for image generation.
 2. In the local.properties (in Gradle Scripts folder), add imageGenerationApiKey="your_API_key".
-3. Sync gradle, rebuild app, start creating your collection of kitchen secret for 🍮 🌮 🥗
+3. Sync gradle, rebuild app, start creating your collection of kitchen secret 🍮 🌮 🥗
 
 
 
