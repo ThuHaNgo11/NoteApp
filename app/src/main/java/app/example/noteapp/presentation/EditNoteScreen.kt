@@ -360,7 +360,8 @@ fun EditNoteScreen(
                     LottieAnimation(
                         composition = composition,
                         modifier = Modifier
-                            .size(300.dp),
+                            .size(300.dp)
+                            .align(Alignment.Center),
                         progress = {
                             progress
                         }

@@ -1,5 +1,6 @@
 package app.example.noteapp.repository
 
+import app.example.noteapp.BuildConfig
 import com.aallam.openai.api.image.ImageCreation
 import com.aallam.openai.api.image.ImageSize
 import com.aallam.openai.api.image.ImageURL
@@ -10,7 +11,7 @@ import kotlinx.coroutines.withContext
 
 class ImageRepository {
 
-    private val openAI: OpenAI = OpenAI("sk-proj-EfgqfvwLxFVQqLm5z9UyT3BlbkFJmNK09ZFQ2RY0ZtlQqzfZ")
+    private val openAI: OpenAI = OpenAI(BuildConfig.imageGenerationApiKey)
     suspend fun makeImageGenerationRequest(prompt: String): String {
         val images = openAI.imageURL( // or openAI.imageJSON
             creation = ImageCreation(

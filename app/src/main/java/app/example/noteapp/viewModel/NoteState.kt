@@ -16,3 +16,4 @@ data class NoteState(
     val imageUrl: MutableState<String> = mutableStateOf(""),
     val imagePrompt: MutableState<String> = mutableStateOf(""),
     )
+

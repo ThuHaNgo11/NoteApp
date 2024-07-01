@@ -1,8 +1,17 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
 }
+
+//val localPropertiesFile = rootProject.file("local.properties")
+//val localProperties = Properties()
+//localProperties.load(FileInputStream(localPropertiesFile))
+val imgGenApiKey = gradleLocalProperties(rootDir).getProperty("imageGenerationApiKey")
 
 android {
     namespace = "app.example.noteapp"
@@ -19,6 +28,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "imageGenerationApiKey", imgGenApiKey
+        )
     }
 
     buildTypes {
@@ -37,7 +49,9 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
