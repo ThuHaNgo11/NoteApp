@@ -20,5 +20,6 @@
 2. In the local.properties (in Gradle Scripts folder), add imageGenerationApiKey="your_API_key".
 3. Sync gradle, rebuild app, start creating your collection of kitchen secret 🍮 🌮 🥗
 
-
+## Demo link
+https://youtu.be/WJI1784yrLc?si=9GPNzI0YSAYbSAI-
 
